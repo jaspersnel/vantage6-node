@@ -121,11 +121,12 @@ class DockerManager(object):
         """
         name = self.network_name
 
-        try:
-            network = self.docker.networks.get(name)
+        networks = self.docker.networks.list(names=[name])
+        if networks:
             self.log.debug(f"Network {name} already exists. Deleting it.")
-            network.remove()
-        except Exception:
+            for network in networks:
+                network.remove()
+        else:
             self.log.debug("No network found...")
 
         self.log.debug(f"Creating isolated docker-network {name}!")
